@@ -1,78 +1,23 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.conf import settings as dj_settings
 
-from .models import CodeQuestionAnswer
-from .forms import SignUpForm
+from web_app import models as web_app_models
+from web_app import forms as web_app_forms
+from web_app import constants as web_app_constants
 
 import openai
 
 
 def home(request):
-    lang_list = [
-        "bash",
-        "basic",
-        "c",
-        "clike",
-        "cobol",
-        "cpp",
-        "csharp",
-        "css",
-        "csv",
-        "dart",
-        "django",
-        "dns-zone-file",
-        "docker",
-        "git",
-        "go",
-        "go-module",
-        "graphql",
-        "hpkp",
-        "hsts",
-        "icon",
-        "ignore",
-        "java",
-        "javadoclike",
-        "javascript",
-        "js-extras",
-        "js-templates",
-        "jsdoc",
-        "json",
-        "json5",
-        "jsstacktrace",
-        "jsx",
-        "julia",
-        "kotlin",
-        "markdown",
-        "markup",
-        "markup-templating",
-        "matlab",
-        "mongodb",
-        "monkey",
-        "nginx",
-        "pascal",
-        "perl",
-        "php",
-        "plsql",
-        "python",
-        "r",
-        "regex",
-        "ruby",
-        "rust",
-        "sas",
-        "sass",
-        "scala",
-        "scss",
-        "solidity",
-        "sql",
-        "squirrel",
-        "swift",
-        "tsx",
-        "typescript",
-        "uri",
-        "vbnet",
-        "visual-basic",
-    ]
+
+    """
+        - Add Question openai return that Question Answer in Code.
+    """
+
+    # Language List
+    lang_list = web_app_constants.LANGUAGE_LIST
 
     if request.method == "POST":
         code = request.POST["code"]
@@ -88,8 +33,9 @@ def home(request):
                 {"lang_list": lang_list, "code": code, "response": code, "lang": lang},
             )
         else:
+
             # Open AI Token
-            openai.api_key = "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"
+            openai.api_key = dj_settings.OPENAI_TOKEN
 
             # Create Open AI Instance
             openai.Model.list()
@@ -105,11 +51,12 @@ def home(request):
                     frequency_penalty=0.0,
                     presence_penalty=0.0,
                 )
+
                 # Parse the Response
                 response = response["choices"][0]["text"]
 
                 # Save the Instance in Database
-                CodeQuestionAnswer.objects.create(
+                web_app_models.CodeQuestionAnswer.objects.create(
                     user=request.user, question=code, answer=response, language=lang
                 )
 
@@ -131,70 +78,12 @@ def home(request):
 
 
 def suggest(request):
-    lang_list = [
-        "bash",
-        "basic",
-        "c",
-        "clike",
-        "cobol",
-        "cpp",
-        "csharp",
-        "css",
-        "csv",
-        "dart",
-        "django",
-        "dns-zone-file",
-        "docker",
-        "git",
-        "go",
-        "go-module",
-        "graphql",
-        "hpkp",
-        "hsts",
-        "icon",
-        "ignore",
-        "java",
-        "javadoclike",
-        "javascript",
-        "js-extras",
-        "js-templates",
-        "jsdoc",
-        "json",
-        "json5",
-        "jsstacktrace",
-        "jsx",
-        "julia",
-        "kotlin",
-        "markdown",
-        "markup",
-        "markup-templating",
-        "matlab",
-        "mongodb",
-        "monkey",
-        "nginx",
-        "pascal",
-        "perl",
-        "php",
-        "plsql",
-        "python",
-        "r",
-        "regex",
-        "ruby",
-        "rust",
-        "sas",
-        "sass",
-        "scala",
-        "scss",
-        "solidity",
-        "sql",
-        "squirrel",
-        "swift",
-        "tsx",
-        "typescript",
-        "uri",
-        "vbnet",
-        "visual-basic",
-    ]
+    """
+        - Suggest Code for Question
+    """
+
+    # Language List
+    lang_list = web_app_constants.LANGUAGE_LIST
 
     if request.method == "POST":
         code = request.POST["code"]
@@ -211,7 +100,7 @@ def suggest(request):
             )
         else:
             # Open AI Token
-            openai.api_key = "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"
+            openai.api_key = dj_settings.OPENAI_TOKEN
 
             # Create Open AI Instance
             openai.Model.list()
@@ -227,10 +116,12 @@ def suggest(request):
                     frequency_penalty=0.0,
                     presence_penalty=0.0,
                 )
+
+                # Parse the Response
                 response = response["choices"][0]["text"]
 
                 # Save the Instance in Database
-                CodeQuestionAnswer.objects.create(
+                web_app_models.CodeQuestionAnswer.objects.create(
                     user=request.user, question=code, answer=response, language=lang
                 )
 
@@ -252,10 +143,14 @@ def suggest(request):
 
 
 def login_user(request):
+    """
+        - Login User
+    """
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
 
+        # Authenticate User
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
@@ -270,31 +165,44 @@ def login_user(request):
 
 
 def logout_user(request):
+    """
+        - Logout User
+    """
     logout(request)
     messages.success(request, "You Have been Logged Out...")
     return redirect("home")
 
 
 def register_user(request):
+    """
+        - Register User
+    """
     if request.method == "POST":
-        form = SignUpForm(request.POST)
+        form = web_app_forms.SignUpForm(request.POST)
+
         if form.is_valid():
             form.save()
+
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password1"]
             user = authenticate(username=username, password=password)
             login(request, user)
-            messages.success(request, "You Have been Registered... Congatulation...")
+
+            messages.success(request, "You Have been Registered... Congratulation...")
+
             return redirect("home")
     else:
-        form = SignUpForm()
+        form = web_app_forms.SignUpForm()
 
     return render(request, "register.html", {"form": form})
 
 
 def user_data(request):
+    """
+        - Get Particular All Data
+    """
     if request.user.is_authenticated:
-        code_question_answer_instances = CodeQuestionAnswer.objects.filter(
+        code_question_answer_instances = web_app_models.CodeQuestionAnswer.objects.filter(
             user_id=request.user.id
         )
         return render(
@@ -308,8 +216,9 @@ def user_data(request):
 
 
 def delete_data(request, instance_id):
-    CodeQuestionAnswer.objects.filter(id=instance_id).delete()
-    # code_question_answer_instances = CodeQuestionAnswer.objects.filter(user_id=request.user.id)
+    """
+        - Delete User Data Instance
+    """
+    web_app_models.CodeQuestionAnswer.objects.filter(id=instance_id).delete()
     messages.success(request, "Code Question Answer Instance Deleted Successfully")
     return redirect("user-data")
-    # render(request, 'user_data.html',{'code_question_answer_instances': code_question_answer_instances})
