@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>User Data</h2>
+<hr>
+{% if code_question_answer_instances %}
+
+{% for instance in code_question_answer_instances %}
+<br>
+	<h5>({{forloop.counter}}) {{instance.question}}</h5>
+<pre>
+<code class="line-numbers language-{{instance.language}}">
+{{instance.answer}}
+</code>
+</pre>
+<a href="{% url 'delete-data' instance.id %}" class="btn btn-outline-secondary btn-sm">Delete</a>
+<br><br><br><br>
+{% endfor %}
+
+{% else %}
+
+<h4>Data Not Found</h4>
+
+{% endif %}
+
+{% endblock %}
