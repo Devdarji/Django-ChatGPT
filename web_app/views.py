@@ -44,7 +44,7 @@ def home(request):
             try:
                 response = openai.Completion.create(
                     engine="text-davinci-003",
-                    prompt=f"Responsd only with code. Fix this {lang} code: {code}",
+                    prompt=f"Responds only with code. Fix this {lang} code: {code}",
                     temperature=0,
                     max_tokens=1000,
                     top_p=1.0,
@@ -109,7 +109,7 @@ def suggest(request):
             try:
                 response = openai.Completion.create(
                     engine="text-davinci-003",
-                    prompt=f"Responsd only with code. {code}",
+                    prompt=f"Responds only with code {code} using {lang}",
                     temperature=0,
                     max_tokens=1000,
                     top_p=1.0,

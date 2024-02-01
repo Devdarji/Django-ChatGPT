@@ -1,0 +1,33 @@
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block content %}
+
+
+<table class="table table-primary table-striped">
+  <thead>
+    <tr>
+      <td>Question</td>
+      <td>A</td>
+      <td>B</td>
+      <td>C</td>
+      <td>D</td>
+      <td>Download</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for instance in quiz_instances %}
+    <tr class="table-active">
+        <td>{{instance.question}}</td>
+        <td>{{instance.option_a}}</td>
+        <td>{{instance.option_b}}</td>
+        <td>{{instance.option_c}}</td>
+        <td>{{instance.option_d}}</td>
+        <td>
+            <a href="{% url 'image-api' question_uuid=instance.question_uuid %}" class="btn btn-dark btn-sm">Open</a>
+        </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

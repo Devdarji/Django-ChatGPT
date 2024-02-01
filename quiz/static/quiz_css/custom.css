@@ -1,0 +1,49 @@
+.square {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    /* Creates a square based on the width */
+    background-color: rgb(255, 255, 255);
+    /* Optional background color */
+    border: 10px solid #3674A5;
+}
+
+.content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    padding: 10px;
+}
+
+.logo-row{
+    background-color: rgb(54, 116, 165);
+    color: #FED346;
+}
+
+.logo{
+    border-radius: 50%;
+}
+
+.text-id{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    color: #3674A5;
+    font-weight: bold;
+    font-size: small;
+}
+
+pre{
+    background-color: #011627!important;
+    border-radius: 0px 0px 12px 12px;
+}
+
+.code-image{
+    background-color: #011627!important;
+    border-radius: 12px 12px 0px 0px;
+}

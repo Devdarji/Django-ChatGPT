@@ -1,0 +1,102 @@
+{% extends 'base_quiz.html' %}
+{% load static %}
+{% block content %}
+
+<form method="POST" action="{% url 'quiz' %}">
+    {% csrf_token %}
+
+    <select class="form-select mt-3" name="lang">
+        <option selected>Select Programming Language</option>
+        {% for i in lang_list %}
+            <option value="{{ i }}">{{ i|title }}</option>
+        {% endfor %}
+    </select>
+
+    <select class="form-select mt-3" name="level">
+        <option selected>Select level of difficulty</option>
+        {% for level in difficulty_list %}
+        <option value="{{ level }}">{{ level }}</option>
+        {% endfor %}
+    </select>
+
+    <div class="mt-3">
+        <input class="form-control" name="topic" placeholder="Enter your topic">{{topic}}</input>
+    </div>
+
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn btn-dark btn-md">Create Quiz</button>
+    </div>
+
+</form>
+
+<form method="POST" action="{% url 'question-answers' %}">
+    {% csrf_token %}
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn btn-dark btn-md">All questions</button>
+    </div>
+</form>
+<form method="POST" action="{% url 'new-test-api' %}">
+    {% csrf_token %}
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn btn-dark btn-md">Test</button>
+    </div>
+</form>
+
+
+{% for quiz in quiz_list %}
+    <div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="square">
+                <div class="content">
+                    <!-- logo code -->
+                    <div class="row">
+                        <div class="col-6 logo-row">
+                            <h1 class="text-start mb-0 mt-1">{{lang|upper}}</h1>
+                        </div>
+                        <div class="col-3"></div>
+                        <div class="col-3 text-end">
+                            <img src="{% static 'images/python.jpg' %}" alt="Logo image" width="60" height="60" class="logo">
+                        </div>
+                    </div>
+
+
+                    <!-- Question content here -->
+                    <div class="row mt-5">
+                        <p class="text-start mb-0">{{quiz.question}}</p>
+                    </div>
+
+                    <!-- Code content here -->
+                    {% if quiz.code %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="text-start ps-2 code-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="54" height="14" viewBox="0 0 54 14"><g fill="none" fill-rule="evenodd" transform="translate(1 1)"><circle cx="6" cy="6" r="6" fill="#FF5F56" stroke="#E0443E" stroke-width=".5"></circle><circle cx="26" cy="6" r="6" fill="#FFBD2E" stroke="#DEA123" stroke-width=".5"></circle><circle cx="46" cy="6" r="6" fill="#27C93F" stroke="#1AAB29" stroke-width=".5"></circle></g></svg>
+                              </div>
+                            <pre class="text-start mb-0 language-python"><code>{{quiz.code}}</code></pre>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Add your content for the square here -->
+                    <div class="row mt-3">
+                        <div class="col-1"></div>
+                        <div  class="col">
+                            <p class="text-start mb-1">(A) {{quiz.option_a}}</p>
+                            <p class="text-start mb-1">(B) {{quiz.option_b}}</p>
+                            <p class="text-start mb-1">(C) {{quiz.option_c}}</p>
+                            <p class="text-start mb-1">(D) {{quiz.option_d}}</p>
+                        </div>
+                    </div>
+
+                    <div class="text-id">
+                        INSTAGRAM | @PYTHON.BOY
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
